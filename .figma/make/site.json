@@ -1,0 +1,10 @@
+{
+  "description": "Empowering women to build consistent gym habits, this AI-driven app offers personalized accountability, goal setting, and daily check-ins for lasting motivation.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

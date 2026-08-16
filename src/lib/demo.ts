@@ -1,0 +1,15 @@
+export const demoUser = {
+  name: 'Coral',
+  email: 'coral@example.com',
+  categories: ['content'],
+  categoryOther: '',
+  goalText: '',
+  whyText: 'I want to get comfortable posting on camera and build confidence.',
+  obstacle: 'I get too busy',
+  obstacles: ['I get too busy'],
+  smartGoalApproved: true,
+  commitmentDays: 30,
+  customDays: '',
+  accountabilityStyle: 'encourage',
+  bestieName: 'Bestie',
+}
