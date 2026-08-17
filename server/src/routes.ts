@@ -1,6 +1,6 @@
 import { Application, Request, Response } from 'express'
 import { createClient } from '@supabase/supabase-js'
-import { requireAuth, optionalAuth } from './middleware/auth'
+import { requireAuth, optionalAuth } from './middleware/auth.js'
 
 const SUPABASE_URL = process.env.SUPABASE_URL || ''
 const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
@@ -50,7 +50,7 @@ export function createServerRoutes(app: Application) {
 
       if (OPENAI_KEY && body.useAI) {
         try {
-          const { generateGoalWithOpenAI, checkRateLimit } = await import('./services/openai')
+          const { generateGoalWithOpenAI, checkRateLimit } = await import('./services/openai.js')
           if (!checkRateLimit('generate_goal', 30)) {
             return res.status(429).json({ error: 'rate_limited' })
           }

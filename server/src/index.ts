@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import { createServerRoutes } from './routes'
+import { createServerRoutes } from './routes.js'
 
 dotenv.config()
 
