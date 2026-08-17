@@ -50,16 +50,22 @@ export function createServerRoutes(app: Application) {
 
       if (OPENAI_KEY && body.useAI) {
         try {
-          const prompt = `Create a SMART goal from: ${JSON.stringify(body)}`
-          const r = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${OPENAI_KEY}` },
-            body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'user', content: prompt }], max_tokens: 500 }),
-          })
-          const j = await r.json()
-          const text = j?.choices?.[0]?.message?.content ?? ''
-          // naive parse: use text as description/title
-          goal = { title: body.goalText || (text.split('\n')[0] ?? goal.title), description: text, frequency: body.preferred_frequency || goal.frequency, time: body.preferred_time || goal.time }
+          const { generateGoalWithOpenAI, checkRateLimit } = await import('./services/openai')
+          if (!checkRateLimit('generate_goal', 30)) {
+            return res.status(429).json({ error: 'rate_limited' })
+          }
+          const ai = await generateGoalWithOpenAI(body)
+          goal = { title: body.goalText || ai.title || goal.title, description: ai.description || goal.description, frequency: body.preferred_frequency || goal.frequency, time: body.preferred_time || goal.time }
+
+          // log conversation to ai_conversations table when possible
+          try {
+            const user = (req as any).user
+            if (user && user.id && SUPABASE_URL && SUPABASE_SERVICE_ROLE) {
+              await supabase.from('ai_conversations').insert([{ user_id: user.id, goal_id: null, role: 'assistant', content: ai.raw, created_at: new Date().toISOString() }])
+            }
+          } catch (e) {
+            console.warn('failed to log ai conversation', e)
+          }
         } catch (err) {
           console.warn('OpenAI call failed, falling back', err)
         }
